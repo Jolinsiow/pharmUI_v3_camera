@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">   
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>AH-HMS</title>
+	<link rel="stylesheet" href="{% static 'css/element.css' %}">
+	<link rel="stylesheet" href="{% static 'css/index.css' %}">
+	<link rel="stylesheet" href="{% static 'css/login.css' %}">
+	<script src="/static/js/vue.js"></script>
+	<script src="{% static 'js/axios.js' %}"></script>
+	<script src="{% static 'js/helper.js' %}"></script>
+	<script src="{% static 'js/element.js' %}"></script>
+	<style></style>
+</head>
+<body>
+  <div id="app">
+    <!-- Log In Form -->
+    <div class="login-container">
+      <el-form ref="loginForm" :model="loginInfo" class="login-form" label-position="left">
+        <div class="title-container">
+          <h2 class="title">Hospital Management System</h2>
+        </div>
+        <!-- 切换面板 -->
+        <el-tabs v-model="activeSystem">
+          <el-tab-pane label="Nurse" name="nurse"></el-tab-pane>
+          <el-tab-pane label="Doctor" name="doctor"></el-tab-pane>
+          <el-tab-pane label="Admin" name="admin"></el-tab-pane>
+        </el-tabs>
+        <el-form-item>
+          <el-input v-model="loginInfo.name" placeholder="Username"/>
+        </el-form-item>
+        <el-form-item>
+          <el-input ref="password" v-model="loginInfo.password" placeholder="Password" type="password"/>
+        </el-form-item>
+  
+        <el-form-item v-if="activeSystem === 'nurse'">
+          <el-button style="width: 100%;" type="primary" @click="onLogin(1)">Nurse Log In</el-button>
+        </el-form-item>
+        <el-form-item v-if="activeSystem === 'doctor'">
+          <el-button style="width: 100%;" type="primary" @click="onLogin(2)">Doctor Log In</el-button>
+        </el-form-item>
+        <el-form-item v-if="activeSystem === 'admin'">
+          <el-button style="width: 100%;" type="primary" @click="onLogin(3)">Admin Log In</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <!-- 注册弹窗 -->
+    <el-dialog title="Patient Registration Form" :visible.sync="showRegisterForm">
+      <el-form ref="registerForm" :model="registerInfo" :rules="registerRules" label-width="80px" label-position="left">
+        <el-form-item label="Name" prop="name">
+          <el-input v-model="registerInfo.name"/>
+        </el-form-item>
+        <el-form-item label="IC" prop="id_card">
+          <el-input v-model="registerInfo.id_card"/>
+        </el-form-item>
+        <el-form-item label="Contact" prop="phone">
+          <el-input v-model="registerInfo.phone"/>
+        </el-form-item>
+        <el-form-item label="Password" prop="password">
+          <el-input v-model="registerInfo.password"/>
+        </el-form-item>
+        <el-form-item label="Gender" prop="sex">
+          <el-select v-model="registerInfo.sex" placeholder="Please Select Your Gender">
+            <el-option label="Male" :value="1"></el-option>
+            <el-option label="Female" :value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Age" prop="age">
+          <el-input v-model="registerInfo.age" type="number"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showRegisterForm = false">Cancel</el-button>
+        <el-button type="primary" @click="onRegisterPatient">Confirm</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</body>
+<!-- 脚本 -->
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        activeSystem: 'patient',
+        loginInfo: {
+          name: '',
+          password: ''
+        },
+        // Patient Registration
+        showRegisterForm: false,
+        registerInfo: {
+          name: '',
+          id_card: '',
+          phone: '',
+          password: '',
+          sex: 1,
+          age: ''
+        },
+        registerRules: {
+          name: [{ required: true, message: 'Please enter your name', trigger: 'blur' }],
+          id_card: [{ required: true, message: 'Please enter your identity number', trigger: 'blur' }],
+          phone: [{ required: true, message: 'Please enter your contact number', trigger: 'blur' }],
+          password: [{ required: true, message: 'Please enter your password', trigger: 'blur' }],
+          sex: [{ required: true, message: 'Please select your gender', trigger: 'change' }],
+          age: [{ required: true, message: 'Please enter your age', trigger: 'blur' }]
+        }
+      }
+    },
+    methods: {
+      // Log In
+      onLogin(type) {
+        const { name, password } = this.loginInfo
+        if (!name || !password) {
+          this.NotifyFail('Please enter your username, password')
+          return
+        }
+        if (type === 1) {
+          // Nurse Log In
+          axios.post(ToDJ('nurseLogin'), new URLSearchParams(this.loginInfo)).then(res => {
+            if (res.data.code === 0) {
+              this.NotifySuc("Login Success!")
+              console.log(res.data.data)
+              window.localStorage.setItem("hospital_userInfo", JSON.stringify(res.data.data))
+              window.location.href = '/nurse'
+            } else {
+              this.NotifyFail(res.data.data)
+            }
+          })
+        } else if (type === 2) {
+          // Doctor Log In
+          axios.post(ToDJ('doctorLogin'), new URLSearchParams(this.loginInfo)).then(res => {
+            if (res.data.code === 0) {
+              this.NotifySuc("Login Success!")
+              console.log(res.data.data)
+              window.localStorage.setItem("hospital_userInfo", JSON.stringify(res.data.data))
+              window.location.href = '/doctor'
+            } else {
+              this.NotifyFail(res.data.data)
+            }
+          })
+        } else if (type === 3) {
+          // Admin Log In
+          axios.post(ToDJ('adminLogin'), new URLSearchParams(this.loginInfo)).then(res => {
+            if (res.data.code === 0) {
+              this.NotifySuc("Login Success!")
+              console.log(res.data.data)
+              window.location.href = '/admin'
+            } else {
+              this.NotifyFail(res.data.data)
+            }
+          })
+          
+        }
+      },
+      // Patient Sign Up (Can Delete. "patientRegister" is the function name in view_patient.py)
+      onRegisterPatient() {
+        this.$refs.registerForm.validate((valid) => {
+          if (valid) {
+            axios.post(ToDJ('patientRegister'), new URLSearchParams(this.registerInfo)).then(res => {
+              if (res.data.code === 0) {
+                this.NotifySuc("Registration Success!")
+                this.showRegisterForm = false
+              } else {
+                this.NotifyFail(res.data.data)
+              }
+            })
+          }
+        })
+      },
+      // Success Notification
+      NotifySuc(str) {
+        this.$message({
+          message: str,
+          type: 'success'
+        })
+			},
+      // Failure Notification
+			NotifyFail(str) {
+        this.$message({
+          message: str,
+          type: 'warning'
+        })
+			}
+    }
+  })
+</script>

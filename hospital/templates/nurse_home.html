@@ -1,0 +1,115 @@
+{%extends "nurse.html" %}
+
+{% block home %}active{% endblock %}
+
+{% load static %}
+
+{% block mainbody %}
+
+
+<title>Django Online Barcode Reader</title>
+<meta charset="utf-8">
+ 
+{% csrf_token %}
+
+<script src={% static "js/html5-qrcode.min.js" %}></script>
+<style>
+  .result{
+    background-color: green;
+    color:#fff;
+    padding:20px;
+  }
+  .row{
+    display:flex;
+  }
+
+</style>
+
+<!--<form action="" method="POST">-->
+
+{% csrf_token %}
+<div class="row">
+  <div class="col">
+    <div style="width:500px;" id="reader"></div>
+  </div>
+  <div class="col" style="padding:30px;">
+    <h4>Scanned Result</h4>
+    <!--<div id="result" name="result">Result Here</div>-->
+    <output type="POST" id="result" name="result" placeholder="qrCodeMessage">
+      {% csrf_token %}
+  </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+  // 1) Create a function to get the CSRF token
+  function getCookie(name) {
+    let cookie = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+    return cookie ? cookie[2] : null;
+  }
+
+  // 2) After generating the qrcode in the onScanSuccess callback, you invoke sendQrCode function with the qr code as argument
+  function onScanSuccess(qrCodeMessage) {
+    document.getElementById("result").innerHTML = '<span class="result">' + qrCodeMessage + "</span>";
+    // Call the function here
+    sendQrCode(qrCodeMessage);
+    html5QrcodeScanner.clear() // Purpose: Stop scanning after the code is scanned
+    
+  }
+
+  //3) Fetch to send a POST request to nurse_qrscan route:
+  async function sendQrCode(qrCode) {
+    console.log(qrCode)
+    const response = await fetch("/nurse_qrscan", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({
+        result: qrCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Do your thing here.
+        console.log(data)
+        }
+      );
+    }
+
+  function onScanError(errorMessage) {
+    //handle scan error
+  }
+
+  var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+    fps: 10,
+    qrbox: 250,
+  });
+  html5QrcodeScanner.render(onScanSuccess, onScanError);
+
+</script>
+
+{% endblock %}
+
+
+<!--
+
+<script type="text/javascript">
+  function onScanSuccess(qrCodeMessage) {
+    document.getElementById('result').innerHTML = '<span class="result">'+qrCodeMessage+'</span>';
+  }
+
+  function onScanError(errorMessage) {
+  //handle scan error
+  }
+
+  var html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+  html5QrcodeScanner.render(onScanSuccess, onScanError);
+
+</script>
+
+
+-->

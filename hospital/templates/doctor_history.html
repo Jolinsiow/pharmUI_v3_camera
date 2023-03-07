@@ -1,0 +1,156 @@
+{%extends "doctor.html" %}
+{% block order %}active{% endblock %}
+{% block mainbody %}
+
+
+{% verbatim %}
+
+<div id="app2" class="container">
+  <el-row :gutter="20" style="width: 50%; height: 120%;">
+    <el-col :span="12">
+      
+      <el-form ref="dateInfoForm" :model="dateInfo" label-width="90px" label-position="left">
+        <el-form-item label="Select Date" prop="select_date">   
+          <el-input type=date v-model="dateInfo.select_date"/>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button style="width: 100%;" type="primary" @click="onSearch">Search</el-button> 
+        </el-form-item>
+      </el-form>
+  </el-col>
+
+    
+    <el-col :span="100">
+      <div class="info-wrapper">
+        <el-table 
+          :data="list"
+          stripe
+          style="width: 100%"
+          align="center">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="60">
+          </el-table-column>
+          <el-table-column
+            prop="job_id"
+            label="Job ID"
+             width="250">
+          </el-table-column>
+          <el-table-column
+            prop="order_id"
+            label="Order ID"
+             width="250">
+          </el-table-column>
+          <el-table-column
+            prop="ward_number"
+            label="Ward No."
+            width="110">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="Status"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="recorded_date"
+            label="Date"
+            width="150">
+          </el-table-column>
+            <el-table-column
+            prop="recorded_time"
+            label="Time"
+            width="150">
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-col>
+  </el-row>
+</div>
+{% endverbatim %}
+
+
+<script>
+  new Vue({
+    el: '#app2',
+    data() {
+      return {
+        list: [],
+        selectDate: 1,
+        dateInfo: {
+          select_date: new Date(),
+        }
+      }
+    },
+
+    mounted() {
+      this.getHistoryList()
+    },
+
+    methods: {
+      getHistoryList() {
+        axios.post(ToDJ('historyList'), new URLSearchParams()).then(res => {
+          if (res.data.code === 0) {
+            console.log(res.data.data)
+            this.list = res.data.data
+          } else {
+            this.NotifyFail(res.data.data)
+          }
+        })
+      },
+
+      onSearch() {
+        this.$refs.dateInfoForm.validate((valid) => {
+          if (valid) {
+            if (this.selectDate === 1) {
+              axios.post(ToDJ("onSearchDate"), new URLSearchParams(this.dateInfo)).then(res => {
+                if (res.data.code === 0) {
+                  this.NotifySuc("Search Results")
+                  this.dateInfoForm = true
+                  this.getHistoryList()
+                } else {
+                  this.NotifyFail(res.data.data)
+                }
+              })
+            }
+          }
+        })
+      },
+  
+      // Success Notification
+      NotifySuc(str) {
+        this.$message({
+          message: str,
+          type: 'success'
+        })
+			},
+      // Error Notification
+			NotifyFail(str) {
+        this.$message({
+          message: str,
+          type: 'warning'
+        })
+			},
+      // 格式化时间
+      formateTime(oriDate) {
+        if (!oriDate) {
+          return ''
+        }
+        const formateDate = new Date(oriDate)
+        const year =  formateDate.getFullYear()
+        const month =  formateDate.getMonth() + 1
+        const day = formateDate.getDate()
+        let h = formateDate.getHours()
+        let m = formateDate.getMinutes()
+        let s = formateDate.getSeconds()
+        h = h >= 10 ? h : `0${h}`
+        m = m >= 10 ? m : `0${m}`
+        s = s >= 10 ? s : `0${s}`
+        return `${year}-${month}-${day} ${h}:${m}`
+      }
+    }
+  })
+</script>
+
+{% endblock %}

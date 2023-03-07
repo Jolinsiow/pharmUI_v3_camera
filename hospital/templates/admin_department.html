@@ -1,0 +1,78 @@
+{%extends "admin.html" %}
+
+{% block department %}active{% endblock %}
+
+{% block mainbody %}
+
+{% verbatim %}
+<div id="app2" class="container">
+  <div class="department-table">
+    <el-table
+      :data="list"
+      stripe
+      style="width: 100%">
+      
+      <el-table-column
+        prop="id"
+        label="Index"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="Department"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="registration_fee"
+        label="Registration Fee">
+      </el-table-column>
+      <el-table-column
+        prop="doctor_num"
+        label="Staff Count">
+      </el-table-column>
+    </el-table>
+  </div>
+</div>
+{% endverbatim %}
+
+<script>
+  new Vue({
+    el: '#app2',
+    data() {
+      return {
+        list: []
+      }
+    },
+    mounted() {
+      this.getDepartmentList()
+    },
+    methods: {
+      getDepartmentList() {
+        // Obtain department list
+        axios.post(ToDJ('departmentList'), new URLSearchParams()).then(res => {
+          if (res.data.code === 0) {
+            console.log(res.data.data)
+            this.list = res.data.data
+          } else {
+            this.NotifyFail(res.data.data)
+          }
+        })
+      },
+      // Success notification
+      NotifySuc(str) {
+        this.$message({
+          message: str,
+          type: 'success'
+        })
+			},
+      // Error notification
+			NotifyFail(str) {
+        this.$message({
+          message: str,
+          type: 'warning'
+        })
+			}
+    }
+  })
+</script>
+{% endblock %}

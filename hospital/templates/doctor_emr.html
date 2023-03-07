@@ -1,0 +1,139 @@
+{%extends "doctor.html" %}
+
+{% block emr %}active{% endblock %}
+
+{% block mainbody %}
+
+{% verbatim %}
+
+
+<div id="app2" class="container">
+  <div class="emr-table">
+    <el-table
+      ref="multipleTable"
+      :data="list"
+      stripe
+      style="width: 50%"
+      @row-click="handle"
+      @selection-change="handleSelectionChange">
+         
+      <el-table-column
+        prop="id"
+        label="Index">
+      </el-table-column>
+      <el-table-column
+        prop="order_id"
+        label="Order ID">
+      </el-table-column>
+      <el-table-column
+        prop="ward_number"
+        label="Ward No.">
+      </el-table-column>
+
+      <!--
+      <el-table-column 
+        prop="prop" 
+        label="Scan QR" 
+        width="width">
+
+        <template slot-scope="{row$index}">
+          <el-button @click="onScanQR(row)" type="warning" icon="el-icon-camera" size="mini">Scan</el-button>
+        </template>
+
+      </el-table-column>
+      -->
+    </el-table>
+  </div>
+</div>
+{% endverbatim %}
+
+<script>
+    new Vue({
+        el: '#app2',
+        data() {
+            return {
+            list: []
+        }
+        },
+        mounted() {
+        this.getemrList()
+        },
+        methods: {
+            getemrList() {
+            // Obtain EMR list
+            axios.post(ToDJ('emrList'), new URLSearchParams()).then(res => {
+                if (res.data.code === 0) {
+                    console.log(res.data.data)
+                    this.list = res.data.data
+                } else {
+                    this.NotifyFail(res.data.data)
+                }
+            })
+            },
+
+            // Purpose: For the row click
+            handle(row, event, column) {
+              console.log(row, event, column)
+              axios.post(ToDJ('medicineRequestSelect'), new URLSearchParams()).then(res => {
+                if (res.data.code === 0) {
+                  console.log(res.data.data)
+                  this.list = res.data.data
+                  let index = this.list.findIndex(item => {
+                    return item.id == row.id
+                  })
+                  if (index == -1) {
+                    this.$refs.multipleTable.toggleRowSelection(row, true);
+                    this.list.push(row)
+                  } else {
+                    this.$refs.multipleTable.toggleRowSelection(row, false);
+                    this.list.splice(index, 1)
+                  }
+
+                  } else {
+                    this.NotifyFail(res.data.data)
+                  }
+                })  
+              },
+            
+            /*
+            handle(row, event, column) {
+              console.log(row, event, column)
+              let index = this.list.findIndex(item => {
+                return item.id == row.id
+              })
+              if (index == -1) {
+                this.$refs.multipleTable.toggleRowSelection(row, true);
+                this.list.push(row)
+              } else {
+                this.$refs.multipleTable.toggleRowSelection(row, false);
+                this.list.splice(index, 1)
+              }
+              // console.log(row, event, column)
+            },
+            */
+            
+            /*
+            onScanQR(row) {
+              this.dialogFormVisible = true;
+              this.tmForm={...row}
+            },
+            */
+
+            // Success notification
+            NotifySuc(str) {
+                this.$message({
+                    message: str,
+                    type: 'success'
+                })
+			},
+            // Error notification
+			NotifyFail(str) {
+                this.$message({
+                message: str,
+                type: 'warning'
+            })
+			}
+        }
+    })
+</script>
+{% endblock %}
