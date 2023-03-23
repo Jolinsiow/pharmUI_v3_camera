@@ -39,7 +39,7 @@ class MedicineSerializer(serializers.HyperlinkedModelSerializer):
 class DeliverySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = user_patient
-        fields = ['id', 'job_id', 'order_id', 'box_number', 'ward_number', 'status', 'recorded_date', 'recorded_time', 'slot_number']
+        fields = ['id', 'job_id', 'order_id', 'box_number', 'ward_number', 'status', 'recorded_date', 'recorded_time', 'slot_number', 'assigned_by', 'received_by']
 
 
 # Mimic CPS
@@ -55,9 +55,34 @@ class DATESerializer(serializers.HyperlinkedModelSerializer):
         model = test_date
         fields = ['id', 'select_date']
 
+#### To record robot prompt
+class RobotPromptSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = robot_prompt
+        fields = ['robot_prompt']
 
-#### Can delete
+
+#### Nurse QR
 class NurseQRSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = nurse_QR
         fields = ['id', 'output']
+
+### Personal: To record pharmacist login
+class PharmLoginSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = pharmacistlogin
+        fields = ['id_card']
+
+### Personal: To record nurse login
+class NurseLoginSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = nurselogin
+        fields = ['id_card']
+
+##### Pharmacist portal: Past Records 
+class PastRecordsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = past_records
+        fields = ['id', 'job_id', 'order_id', 'ward_number', 'status', 'recorded_date', 'recorded_time', 'assigned_by', 'received_by']
+

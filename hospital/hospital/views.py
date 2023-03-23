@@ -36,6 +36,11 @@ def doctor_emr(request):
 
 
 #Doctor: Past records
+def doctor_deliverylist(request):
+  return render(request, 'doctor_deliverylist.html')
+
+
+#Doctor: Past records
 def doctor_history(request):
   return render(request, 'doctor_history.html')
 

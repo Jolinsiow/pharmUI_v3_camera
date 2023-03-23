@@ -26,8 +26,48 @@ SECRET_KEY = 'django-insecure-d44=xloa_ngo&moz%cujtvuqpr7ub)hfbqss6$xnubj031q3!9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.61.130', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['192.168.16.130', '127.0.0.1', 'localhost', '0.0.0.0']
 
+
+# !!! Added for CSRF protection
+
+CORS_ORIGIN_ALLOW_ALL=True
+#CORS_ALLOW_ALL_ORIGINS=True
+
+CORS_ALLOWED_ORIGINS = [ 
+    "http://0.0.0.0:8000",
+    "http://localhost:8000",
+    "http://192.168.16.130:8000",
+    "http://127.0.0.1:8000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://0.0.0.0:8000",
+    "http://localhost:8000",
+    "http://192.168.16.130:8000",
+    "http://127.0.0.1:8000"
+]
+
+CORS_ALLOW_METHODS = [
+'DELETE',
+'GET',
+'OPTIONS',
+'PATCH',
+'POST',
+'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Application definition
 
@@ -38,10 +78,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',                      # !!! Added for CSRF 
     'hospital'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',                # !!! Added for CSRF
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,6 +91,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.CommonMiddleware',               # !!! Added for CSRF 
 ]
 
 ROOT_URLCONF = 'hospital.urls'
@@ -75,13 +118,20 @@ WSGI_APPLICATION = 'hospital.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',   #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'aws_db',
+        'HOST': 'database-2.cxjd4rzryhvg.ap-southeast-1.rds.amazonaws.com',
+        'PORT': '5430',
+        'USER': 'jolinsiow_db',
+        'PASSWORD': 'jolinsiow'
+    }
+}
+
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -92,17 +142,7 @@ DATABASES = {
         'PASSWORD': 'jolinsiow'
     }
 }
-'''
-DATABASES = { 
-    'default': { 
-        'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-        'NAME': 'hospital2', # 数据库名称
-        'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1 
-        'PORT': 3306, # 端口 
-        'USER': 'root',  # 数据库用户名
-        'PASSWORD': 'root', # 数据库密码
-    } 
-} 
+
 '''
 
 # Password validation

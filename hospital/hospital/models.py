@@ -70,10 +70,13 @@ class user_patient(models.Model):
     recorded_date = models.DateField(auto_now_add=True)
     recorded_time = models.TimeField(auto_now_add=True)
     slot_number = models.SmallIntegerField(auto_created=True)
+    assigned_by = models.CharField(max_length=50)
+    received_by = models.CharField(max_length=50)
 
     class Meta:
         managed = False
         db_table = 'user_patient'
+
 
 
 # EMR
@@ -105,3 +108,46 @@ class nurse_QR(models.Model):
     class Meta:
         managed = False
         db_table = 'nurse_QR'
+
+
+#### For robot prompt
+class robot_prompt(models.Model):
+    robot_prompt = models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'robot_prompt'
+
+### Personal: To record pharmacist login
+class pharmacistlogin(models.Model):
+    id_card = models.CharField(max_length=200)
+    
+    class Meta:
+        managed = False
+        db_table = 'pharmacistlogin'
+
+
+### Personal: To record nurse login
+class nurselogin(models.Model):
+    id_card = models.CharField(max_length=200)
+    
+    class Meta:
+        managed = False
+        db_table = 'nurselogin'
+
+
+##### Pharmacist portal: Past Records 
+class past_records(models.Model):
+    id = models.AutoField(primary_key=True) 
+    job_id = models.CharField(auto_created=True, max_length=30)
+    order_id = models.CharField(max_length=30)
+    ward_number = models.SmallIntegerField()
+    status = models.CharField(max_length=30)
+    recorded_date = models.DateField(auto_now_add=True)
+    recorded_time = models.TimeField(auto_now_add=True)
+    assigned_by = models.CharField(max_length=50)
+    received_by = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'past_records'

@@ -59,7 +59,10 @@
     </div>
   </el-dialog>
 </div>
+
 {% endverbatim %}
+
+
 <script>
   new Vue({
     el: '#app2',
@@ -89,7 +92,7 @@
     },
     methods: {
       getDoctorList() {
-        // 获取列表
+        // Obtain the list of doctors
         axios.post(ToDJ('doctorList'), new URLSearchParams()).then(res => {
           if (res.data.code === 0) {
             console.log(res.data.data)
@@ -99,16 +102,17 @@
           }
         })
       },
-      // 点击添加
+      // Add new doctor
       onAddDoctor() {
         this.addDoctorFormType = 1
         this.showAddDoctorForm = true
       },
-      // 提交添加
+
+      // Upon submit
       onSubmitAddDoctor() {
         this.$refs.addDoctorForm.validate((valid) => {
           if (valid) {
-            // 新添加
+            // Add new doctor. Write into python function
             if (this.addDoctorFormType === 1) {
               axios.post(ToDJ('doctorAdd'), new URLSearchParams(this.addDoctorInfo)).then(res => {
                 if (res.data.code === 0) {
@@ -123,14 +127,14 @@
           }
         })
       },
-      // 成功提示
+      // Success notification
       NotifySuc(str) {
         this.$message({
           message: str,
           type: 'success'
         })
 			},
-      // 错误提示
+      // Error notification
 			NotifyFail(str) {
         this.$message({
           message: str,

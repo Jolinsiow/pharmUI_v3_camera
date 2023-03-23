@@ -23,9 +23,13 @@ from hospital import view_doctor_history
 from django.urls import path
 from . import views
 
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
+
 urlpatterns = [
     # Main Page
     path('', views.login, name='login'),
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon/favicon.ico'))),
     path('login/', views.login),
     path('admin/', views.admin_department, name='admin_department'),
     path('admin_department/', views.admin_department),
@@ -35,13 +39,12 @@ urlpatterns = [
 
     path('doctor/', views.doctor_history),
     path('doctor_history/', views.doctor_history),
-
-    path('doctor_emr/', views.doctor_emr), 
+    path('doctor_deliverylist/', views.doctor_deliverylist),
+    path('doctor_emr/', views.doctor_emr),
 
     path('nurse/', views.nurse_home),
     path('nurse_home/', views.nurse_home),
 
-    # Data Request
 
     # Admin
     path('adminLogin', view_admin.adminLogin, name='adminLogin'),
@@ -62,10 +65,9 @@ urlpatterns = [
 
     # Doctor
     path('doctorLogin', view_doctor.doctorLogin, name='doctorLogin'),
-    #path('deliveryJob', view_doctor.deliveryJob, name="deliveryJob"),
     path('emrList', view_doctor.emrList, name='emrList'),
     path('medicineRequestSelect', view_doctor.medicineRequestSelect, name='medicineRequestSelect'),
-    #path('deliveryList', view_doctor.deliveryList, name="deliveryList"),
     path('historyList', view_doctor_history.historyList, name="historyList"),
     path('onSearchDate', view_doctor_history.onSearchDate, name="onSearchDate"),
+    path('deliveryList', view_doctor.deliveryList, name="deliveryList"),
 ]

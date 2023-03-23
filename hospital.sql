@@ -115,6 +115,31 @@ INSERT INTO user_doctor VALUES (1,'Doctor Lim','310116199001011234',1,1,'123456'
 
 
 --
+-- SQLINES DEMO *** or table `user_nurse`
+--
+
+DROP TABLE IF EXISTS user_nurse;
+
+CREATE SEQUENCE user_nurse_seq;
+
+CREATE TABLE user_nurse (
+  id int NOT NULL DEFAULT NEXTVAL ('user_nurse_seq'),
+  name varchar(45) DEFAULT NULL ,
+  id_card varchar(45) DEFAULT NULL ,
+  department_id int DEFAULT NULL ,
+  status int DEFAULT NULL ,
+  password varchar(45) DEFAULT NULL,
+  PRIMARY KEY (id)
+)  ;
+
+
+ALTER SEQUENCE user_nurse_seq RESTART WITH 5;
+
+INSERT INTO user_nurse VALUES (1,'Nurse Mary Choy','61311118010114',1,1,'123456'),(2,'Nurse Sally','6613419000021534',2,1,'123456'),(3,'Nurse Melinda','310738409909310334',3,1,'123456'),(4,'Nurse Alex','310194791001048494',4,1,'123456');
+
+select * from user_nurse
+
+--
 -- SQLINES DEMO *** or table `user_patient`: Doctor inputs new medication requests
 --
 
@@ -140,21 +165,23 @@ CREATE TABLE user_patient (
   	status VARCHAR(64),
 	recorded_date varchar(45),
 	recorded_time varchar(45),
-	slot_number varchar(45) DEFAULT NEXTVAL ('slot_sequence')
+	slot_number varchar(45) DEFAULT NEXTVAL ('slot_sequence'),
+	assigned_by VARCHAR(64),
+	received_by VARCHAR(64) DEFAULT NULL
 )   ;
 
-ALTER SEQUENCE slot_sequence RESTART WITH 5;
-ALTER SEQUENCE id_seq RESTART WITH 5;
+ALTER SEQUENCE slot_sequence RESTART WITH 3;
+ALTER SEQUENCE id_seq RESTART WITH 3;
 
 /*Note: Without defining a Primary Key, Django assumes a primary key column named id. 
 However this column doesn't actually exist in the table. Therefore I get the error "column test.id does not exist"*/
 
 
 INSERT INTO user_patient VALUES 
-(1, 'P-1274', 'EMR-1839', '9', '1', 'PickedUp', '2021-09-07', '00:00:00', '1'), 
-(2, 'P-1129', 'EMR-2842', '1','5', 'DroppedOff', '2021-09-13', '18:58:13', '2'), 
-(3, 'P-2748', 'EMR-9471', '2', '2', 'Completed', '2021-09-13', '18:58:13', '3'), 
-(4, 'P-182', 'EMR-0193', '8', '3', 'Pending', '2021-09-14', '16:22:18', '4')
+(1, 'P-1274', 'EMR-1839', '2', '1', 'PickedUp', '2023-03-14', '00:00:00', '1', '310116199001011234')
+
+INSERT INTO user_patient VALUES
+(2, 'P-182', 'EMR-0193', '9', '3', 'Retrieved', '2023-03-14', '16:22:18', '2', '310116199001031234', '310738409909310334')
 
 select * from user_patient
 
@@ -174,6 +201,29 @@ ALTER SEQUENCE QR_id RESTART WITH 2;
 insert into nurse_QR (id, output) values (1, '1235850693');
 
 select * from nurse_QR
+
+/********** Personal: Record pharmacist login details **********/
+DROP TABLE IF EXISTS pharmacistlogin;
+
+CREATE TABLE pharmacistlogin (
+  	id_card varchar(45) DEFAULT NULL
+)   ;
+
+INSERT INTO pharmacistlogin (id_card) VALUES ('310116199001011234');
+
+select * from pharmacistlogin
+
+
+/********** Personal: Record nurse login details **********/
+DROP TABLE IF EXISTS nurselogin;
+
+CREATE TABLE nurselogin (
+  	id_card varchar(45) DEFAULT NULL
+)   ;
+
+INSERT INTO nurselogin (id_card) VALUES ('61311118010114');
+
+select * from nurselogin
 
 
 /********** Date selected for past records **********/
@@ -195,6 +245,17 @@ insert into test_date (id, select_date) values (3, '2023-01-17');
 select * from test_date
 
 
+-- Prompt to call robot --
+
+DROP TABLE IF EXISTS robot_prompt;
+
+CREATE TABLE robot_prompt(
+	robot_prompt varchar(15) DEFAULT NULL
+);
+
+SELECT * FROM robot_prompt
+
+
 -- EMR Database --
 
 DROP TABLE IF EXISTS patients_data;
@@ -205,18 +266,51 @@ CREATE SEQUENCE order_seq;
 
 CREATE TABLE patients_data(
 	id int NOT NULL DEFAULT NEXTVAL ('CPS_seq') PRIMARY KEY,
-	order_id TEXT NOT NULL DEFAULT 'EMR-'||nextval('test_seq'::regclass)::TEXT,
+	order_id TEXT NOT NULL DEFAULT 'EMR-'||nextval('order_seq'::regclass)::TEXT,
 	ward_number INT
 );
 
-ALTER SEQUENCE CPS_seq RESTART WITH 5;
+ALTER SEQUENCE CPS_seq RESTART WITH 8;
 
 insert into patients_data (id, order_id, ward_number) values (1, 'EMR-133', 5);
 insert into patients_data (id, order_id, ward_number) values (2, 'EMR-9378', 1);
 insert into patients_data (id, order_id, ward_number) values (3, 'EMR-2480', 4);
 insert into patients_data (id, order_id, ward_number) values (4, 'EMR-144', 1);
+insert into patients_data (id, order_id, ward_number) values (5, 'EMR-84', 2);
+insert into patients_data (id, order_id, ward_number) values (6, 'EMR-9204', 3);
+insert into patients_data (id, order_id, ward_number) values (7, 'EMR-284', 1)
 
 SELECT * FROM patients_data
+
+
+--- Past History Records ---
+
+DROP TABLE IF EXISTS past_records;
+
+CREATE SEQUENCE id_seq2;
+
+CREATE TABLE past_records (
+	id int NOT NULL DEFAULT NEXTVAL ('id_seq2') PRIMARY KEY,
+	job_id VARCHAR(64), 
+	order_id VARCHAR(64), 
+  	ward_number int DEFAULT NULL,
+  	status VARCHAR(64),
+	recorded_date varchar(45),
+	recorded_time varchar(45),
+	assigned_by VARCHAR(64),
+	received_by VARCHAR(64) DEFAULT NULL
+)   ;
+
+ALTER SEQUENCE id_seq2 RESTART WITH 5;
+
+INSERT INTO past_records VALUES 
+(1, 'P-1274', 'EMR-1839', '1', 'Completed', '2023-02-15', '00:00:00', '310116199001011234', '61311118010114'), 
+(2, 'P-1129', 'EMR-2842', '5', 'Completed', '2023-03-13', '18:58:13', '310116199001021234', '6613419000021534'), 
+(3, 'P-2748', 'EMR-9471', '2', 'Completed', '2023-03-13', '18:58:13', '310116199001041234', '310194791001048494'), 
+(4, 'P-182', 'EMR-0193', '3', 'Completed', '2023-03-12', '16:22:18', '310116199001031234', '310738409909310334')
+
+select * from past_records
+
 
 
 

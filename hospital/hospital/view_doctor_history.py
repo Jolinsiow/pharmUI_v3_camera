@@ -22,7 +22,7 @@ def onSearchDate(request):
 
 @api_view(['GET',"POST"])
 def historyList(request):
-    list = user_patient.objects.all()
+    list = past_records.objects.all()
     arr = []
     c = connection.cursor()
     c.execute("SELECT u.select_date FROM test_date u")
@@ -37,6 +37,8 @@ def historyList(request):
             temp["status"] = item.status
             temp["recorded_date"] = item.recorded_date
             temp["recorded_time"] = item.recorded_time
+            temp["assigned_by"] = item.assigned_by
+            temp["received_by"] = item.received_by
 
             arr.append(temp)
 
@@ -44,44 +46,3 @@ def historyList(request):
 
 
 
-
-'''
-@api_view(['GET',"POST"])
-def historyList(request):
-    list = user_patient.objects.all()
-    arr = []
-    c = connection.cursor()
-    data = c.execute("SELECT u.select_date FROM test_date u")
-    if TypeError == False:
-        date_selected = data.fetchall()[-1][-1]   
-        for item in list:
-            temp = {}
-            if item.recorded_date == date_selected:
-                temp["id"] = item.id
-                temp["patient_id"] = item.patient_id
-                temp["ward_number"] = item.ward_number
-                temp["status"] = item.status
-                temp["assigned_by"] = item.assigned_by
-                temp["received_by"] = item.received_by
-                temp["recorded_date"] = item.recorded_date
-                temp["recorded_time"] = item.recorded_time
-
-                arr.append(temp)
-        return Action.success(arr)
-
-    else:
-        for item in list:
-            temp = {}
-            if item.recorded_date == datetime.now().date().strftime('%Y-%m-%d'):
-                temp["id"] = item.id
-                temp["patient_id"] = item.patient_id
-                temp["ward_number"] = item.ward_number
-                temp["status"] = item.status
-                temp["assigned_by"] = item.assigned_by
-                temp["received_by"] = item.received_by
-                temp["recorded_date"] = item.recorded_date
-                temp["recorded_time"] = item.recorded_time
-
-
-            return Action.fail("Action failed")
-'''

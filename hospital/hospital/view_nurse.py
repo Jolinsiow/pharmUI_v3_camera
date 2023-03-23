@@ -22,8 +22,10 @@ def nurseLogin(request):
   if user.password != password:
     # If user does not exist, password incorrect, it will return this message
     return Action.fail("Password Incorrect")
+  
   # Successful Log In
-  # return render(request, 'admin.html')
+  c = connection.cursor()
+  c.execute("INSERT INTO nurselogin (id_card) VALUES ('{0}');".format(id_card))
   return Action.success(UserNurseSerializer(user, many = False).data)
 
 
@@ -75,29 +77,17 @@ def nurse_qrscan(request):
     if result != None:
       c = connection.cursor()
       # Saving the result to database, nurse_QR
-      c.execute("INSERT INTO nurse_QR (output) VALUES ('{0}');".format(result))
+      c.execute("INSERT INTO nurse_QR (output) VALUES ('{0}');".format(result)) # Not needed anymore
+
+      # Status update to "Retrieved"
+      # Add in "received_by" after nurse scans QR code to acknowledge receipt of medications
+      c.execute("SELECT id_card FROM nurselogin")
+      received_by = c.fetchall()[-1][0]  
+      c.execute("UPDATE user_patient SET status='Retrieved' WHERE box_number = '%s'" % (result)) 
+      c.execute("UPDATE user_patient SET received_by='%s' WHERE box_number = '%s'" % (received_by, result)) 
+      
       return Action.success()
 
-'''
-@api_view(['GET',"POST"])
-# Nurse scans QR
-def nurse_qrscan(request):
-  if request.method == 'POST':
-    # parse the JSON data
-    data = json.load(request)
-    result = data.get("result")
-
-    c = connection.cursor()                                      ##### Will cause NoneType Error
-    output_col = c.execute("SELECT u.output FROM nurse_QR u")
-    last_result = c.fetchall()[-1][0]
-    if (result != last_result) and (result != None): 
-      c = connection.cursor()
-      # Saving the result to database, nurse_QR
-      c.execute("INSERT INTO nurse_QR (output) VALUES ('{0}');".format(result))
-      return Action.success()
-
-
-'''
 
 
     
