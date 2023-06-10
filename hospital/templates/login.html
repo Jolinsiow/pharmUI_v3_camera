@@ -28,7 +28,7 @@
         <el-tabs v-model="activeSystem">
           <el-tab-pane label="Nurse" name="nurse"></el-tab-pane>
           <el-tab-pane label="Doctor" name="doctor"></el-tab-pane>
-          <el-tab-pane label="Admin" name="admin"></el-tab-pane>
+          <el-tab-pane label="Admin" name="admin_1"></el-tab-pane>
         </el-tabs>
         <el-form-item>
           <el-input v-model="loginInfo.name" placeholder="Username"/>
@@ -43,7 +43,7 @@
         <el-form-item v-if="activeSystem === 'doctor'">
           <el-button style="width: 100%;" type="primary" @click="onLogin(2)">Doctor Log In</el-button>
         </el-form-item>
-        <el-form-item v-if="activeSystem === 'admin'">
+        <el-form-item v-if="activeSystem === 'admin_1'">
           <el-button style="width: 100%;" type="primary" @click="onLogin(3)">Admin Log In</el-button>
         </el-form-item>
       </el-form>
@@ -150,7 +150,7 @@
             if (res.data.code === 0) {
               this.NotifySuc("Login Success!")
               console.log(res.data.data)
-              window.location.href = '/admin'
+              window.location.href = '/admin_1'
             } else {
               this.NotifyFail(res.data.data)
             }

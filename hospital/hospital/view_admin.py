@@ -12,7 +12,7 @@ def adminLogin(request):
   name = request.POST.get('name')
   password = request.POST.get('password')
   # 根据name查询
-  user = admin.objects.filter(name=name).first()
+  user = admin_1.objects.filter(name=name).first()
   if not user:
     # 用户不存在,则直接返回错误消息
     return Action.fail("用户不存在")

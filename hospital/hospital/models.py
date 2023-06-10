@@ -1,7 +1,7 @@
 from django.db import models
 
-# 管理员类
-class admin(models.Model):
+# Admin
+class admin_1(models.Model):
     id = models.AutoField(primary_key=True) # id 会自动创建,可以手动写入
     name = models.CharField(max_length=45) # 姓名
     password = models.CharField(max_length=45) # 密码
@@ -10,7 +10,7 @@ class admin(models.Model):
         managed = False
         db_table = 'admin'
 
-# 医生类
+# Doctor
 class user_doctor(models.Model):
     id = models.AutoField(primary_key=True) # id 会自动创建,可以手动写入
     name = models.CharField(max_length=45) # 姓名
@@ -36,7 +36,7 @@ class user_nurse(models.Model):
         managed = False
         db_table = 'user_nurse'
 
-# 科室类
+# Department
 class department(models.Model):
     id = models.AutoField(primary_key=True) # id 会自动创建,可以手动写入
     name = models.CharField(max_length=45) # 名称
@@ -47,7 +47,7 @@ class department(models.Model):
         managed = False
         db_table = 'department'
 
-# 药品类
+# Medicine
 class medicine(models.Model):
     id = models.AutoField(primary_key=True) # id 会自动创建,可以手动写入
     name = models.CharField(max_length=45) # 名称
@@ -73,6 +73,9 @@ class user_patient(models.Model):
     assigned_by = models.CharField(max_length=50)
     received_by = models.CharField(max_length=50)
 
+    def __str__(self):
+        return f"{self.id}, {self.job_id},{self.order_id}, {self.status}, {self.assigned_by}, {self.received_by}"
+
     class Meta:
         managed = False
         db_table = 'user_patient'
@@ -84,6 +87,9 @@ class patients_data(models.Model):
     id = models.AutoField(primary_key=True)
     order_id = models.CharField(max_length=30)
     ward_number = models.SmallIntegerField()
+
+    def __str__(self):
+        return f"{self.id}, {self.order_id}, {self.ward_number}"
 
 
     class Meta:
@@ -99,6 +105,7 @@ class test_date(models.Model):
     class Meta:
         managed = False
         db_table = 'test_date'
+
 
 ### To test nurse QR
 class nurse_QR(models.Model):
@@ -147,6 +154,9 @@ class past_records(models.Model):
     recorded_time = models.TimeField(auto_now_add=True)
     assigned_by = models.CharField(max_length=50)
     received_by = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.order_id}, {self.status}, {self.assigned_by}, {self.received_by}"
 
     class Meta:
         managed = False

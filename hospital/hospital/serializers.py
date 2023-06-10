@@ -6,7 +6,7 @@ from .models import *
 # Admin Data
 class AdminSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = admin
+        model = admin_1
         fields = ['id', 'name', 'password']
 
 # Doctor/Pharmacist Data

@@ -107,6 +107,7 @@
             console.log(response.data)
             const index = this.list.indexOf(this.selectedRow);
             if (index !== -1) {
+              this.NotifySuc("Successfully Added!")
               this.list.splice(index, 1);
             }
           })
@@ -120,7 +121,15 @@
           this.scanner.stop();
         }
         this.qrDialogVisible = false;
-      }
+      },
+
+      // Success notification
+      NotifySuc(str) {
+        this.$message({
+          message: str,
+          type: 'success'
+        })
+			},
 
     }
   })

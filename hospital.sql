@@ -170,18 +170,21 @@ CREATE TABLE user_patient (
 	received_by VARCHAR(64) DEFAULT NULL
 )   ;
 
-ALTER SEQUENCE slot_sequence RESTART WITH 3;
-ALTER SEQUENCE id_seq RESTART WITH 3;
+ALTER SEQUENCE slot_sequence RESTART WITH 2; 
+ALTER SEQUENCE id_seq RESTART WITH 2;
 
 /*Note: Without defining a Primary Key, Django assumes a primary key column named id. 
 However this column doesn't actually exist in the table. Therefore I get the error "column test.id does not exist"*/
 
 
 INSERT INTO user_patient VALUES 
-(1, 'P-1274', 'EMR-1839', '2', '1', 'PickedUp', '2023-03-14', '00:00:00', '1', '310116199001011234')
+(1, 'P-1274', 'EMR-1839', '1000', '100', 'PickedUp', '2023-04-08', '00:00:00', '1', '310116199001011234'),
+(2, 'P-1276', 'EMR-1617', '1001', '101', 'DroppedOff', '2023-04-09', '00:00:00', '3', '310116199001011234')
 
+/* For demo retrieving empty boxes */
 INSERT INTO user_patient VALUES
-(2, 'P-182', 'EMR-0193', '9', '3', 'Retrieved', '2023-03-14', '16:22:18', '2', '310116199001031234', '310738409909310334')
+(1, 'P-182', 'EMR-0193', '3', '3', 'Retrieved', '2023-04-12', '17:22:18', '2', '310116199001031234', '310738409909310334')
+
 
 select * from user_patient
 
@@ -253,6 +256,7 @@ CREATE TABLE robot_prompt(
 	robot_prompt varchar(15) DEFAULT NULL
 );
 
+insert into robot_prompt (robot_prompt) values ('Activate'); 
 SELECT * FROM robot_prompt
 
 
@@ -272,13 +276,13 @@ CREATE TABLE patients_data(
 
 ALTER SEQUENCE CPS_seq RESTART WITH 8;
 
-insert into patients_data (id, order_id, ward_number) values (1, 'EMR-133', 5);
-insert into patients_data (id, order_id, ward_number) values (2, 'EMR-9378', 1);
-insert into patients_data (id, order_id, ward_number) values (3, 'EMR-2480', 4);
-insert into patients_data (id, order_id, ward_number) values (4, 'EMR-144', 1);
-insert into patients_data (id, order_id, ward_number) values (5, 'EMR-84', 2);
-insert into patients_data (id, order_id, ward_number) values (6, 'EMR-9204', 3);
-insert into patients_data (id, order_id, ward_number) values (7, 'EMR-284', 1)
+insert into patients_data (id, order_id, ward_number) values (1, 'EMR-133', 3);
+insert into patients_data (id, order_id, ward_number) values (2, 'EMR-9378', 5);
+insert into patients_data (id, order_id, ward_number) values (3, 'EMR-2480', 3);
+insert into patients_data (id, order_id, ward_number) values (4, 'EMR-144', 5);
+insert into patients_data (id, order_id, ward_number) values (5, 'EMR-84', 3);
+insert into patients_data (id, order_id, ward_number) values (6, 'EMR-9204', 5);
+insert into patients_data (id, order_id, ward_number) values (7, 'EMR-284', 3)
 
 SELECT * FROM patients_data
 
@@ -301,15 +305,19 @@ CREATE TABLE past_records (
 	received_by VARCHAR(64) DEFAULT NULL
 )   ;
 
-ALTER SEQUENCE id_seq2 RESTART WITH 5;
+ALTER SEQUENCE id_seq2 RESTART WITH 9;
 
 INSERT INTO past_records VALUES 
-(1, 'P-1274', 'EMR-1839', '1', 'Completed', '2023-02-15', '00:00:00', '310116199001011234', '61311118010114'), 
-(2, 'P-1129', 'EMR-2842', '5', 'Completed', '2023-03-13', '18:58:13', '310116199001021234', '6613419000021534'), 
-(3, 'P-2748', 'EMR-9471', '2', 'Completed', '2023-03-13', '18:58:13', '310116199001041234', '310194791001048494'), 
-(4, 'P-182', 'EMR-0193', '3', 'Completed', '2023-03-12', '16:22:18', '310116199001031234', '310738409909310334')
+(1, 'P-1274', 'EMR-1839', '1', 'Completed', '2023-04-01', '00:00:00', '310116199001011234', '61311118010114'), 
+(2, 'P-1129', 'EMR-2842', '5', 'Completed', '2023-04-01', '18:58:13', '310116199001021234', '6613419000021534'), 
+(3, 'P-2748', 'EMR-9471', '2', 'Completed', '2023-04-02', '18:58:13', '310116199001041234', '610194791001048494'), 
+(4, 'P-182', 'EMR-0193', '3', 'Completed', '2023-04-03', '16:22:18', '310116199001031234', '610738409909310334'),
+(5, 'P-1849', 'EMR-9401', '2', 'Completed', '2023-04-04', '02:45:20', '311238930999349872', '681029301874878'), 
+(6, 'P-1801', 'EMR-5618', '6', 'Completed', '2023-04-05', '13:51:53', '301923987398592592', '6613419000021534'), 
+(7, 'P-7591', 'EMR-6281', '6', 'Completed', '2023-04-05', '16:28:43', '30871827496875802', '6989882834980234'), 
+(8, 'P-8292', 'EMR-8523', '7', 'Completed', '2023-04-06', '17:24:52', '398792388750812124', '69832794891223')
 
-select * from past_records
+select * from past_records 
 
 
 

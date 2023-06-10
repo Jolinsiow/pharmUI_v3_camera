@@ -86,7 +86,7 @@ def emrList(request):
 import json
 from django.http import JsonResponse
 from .timer import TimerClass
-
+import webbrowser
 
 @api_view(['GET',"POST"])
 def medicineRequestSelect(request):
@@ -113,36 +113,42 @@ def medicineRequestSelect(request):
     order_id_str = str(order_id)
     c.execute("DELETE FROM patients_data WHERE order_id = '%s'" % (order_id_str))
 
-
-    ####################### ROBOT PROMPT TRIGGER #############################
+    
+    ######################## ROBOT PROMPT TRIGGER #############################
     # To add: Since there is a new order, I check the database to count if there are 6 boxes/ 15 mins interval
     c.execute("SELECT COUNT(*) FROM user_patient WHERE status = '%s'" % ("Pending"))  
-    for record in c.fetchall():     
-        tmr = TimerClass()
-        
-        if record[0] == 1:
-          print("There is only 1 Pending box in the database")
-          tmr.start()    
-          # For demo purpose: As long as there is 1 "Pending" box, ACTIVATE ROBOT
-            
-          
-        elif record[0] == 6 and tmr.count != 0: # There are already 6 boxes and timer function has not ended, stop the timer and call the robot
-          tmr.stop()
-          print("There are already 6 boxes but timer is not up. Stop timer function and call the robot")
-          
-          # Write robot_prompt into the DB to send to REST Server / Link to call robot
-          robot_prompt = "Activate"
-          c.execute("INSERT INTO robot_prompt (robot_prompt) VALUES ('{0}');".format(robot_prompt))
-          
-        
-        elif record[0] == 7:
-          print("Loop restart")
-  
-          tmr.start()
+    pending_box_count = c.fetchone()[0] # Get the count directly instead of using a loop
+    print("Box count", pending_box_count)
 
-        else:
-          continue
+    tmr = TimerClass()
 
+    if pending_box_count == 1 and not tmr.is_running:
+      print("There is only 1 Pending box in the database")
+      tmr.start()    
+
+    
+    # For demo purpose: As long as there are 2 "Pending" boxes, ACTIVATE ROBOT
+    elif pending_box_count == 2:
+      print("There are 2 boxes in the database, send a REST call to the server to call the robot")
+      robot_prompt = "Activate"
+      c.execute("INSERT INTO robot_prompt (robot_prompt) VALUES ('{0}');".format(robot_prompt))
+      webbrowser.open_new_tab('http://192.168.97.177:5000/startpharm')   #https://www.google.com/
+
+
+    elif pending_box_count == 6 and tmr.is_running == False: # There are already 6 boxes and timer function has not ended, stop the timer and call the robot
+      tmr.stop()
+      print("There are already 6 boxes but timer is not up. Stop timer function and call the robot")
+
+      # Write robot_prompt into the DB to send to REST Server / Link to call robot
+      robot_prompt = "Activate"
+      c.execute("INSERT INTO robot_prompt (robot_prompt) VALUES ('{0}');".format(robot_prompt))
+      webbrowser.open_new_tab('http://192.168.97.177:5000/startpharm')
+      print("Successfully sent a REST call to the server.")
+    
+    elif pending_box_count == 7:
+      print("Loop restart")
+      tmr.start()
+    
     return JsonResponse({'success': True})
   else:
     return JsonResponse({'success': False, 'message': 'Invalid request method'})

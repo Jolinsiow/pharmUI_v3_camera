@@ -25,13 +25,15 @@ from . import views
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
+from django.contrib import admin
 
 urlpatterns = [
     # Main Page
     path('', views.login, name='login'),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon/favicon.ico'))),
+    path('admin/', admin.site.urls),
     path('login/', views.login),
-    path('admin/', views.admin_department, name='admin_department'),
+    path('admin_1/', views.admin_department, name='admin_department'),
     path('admin_department/', views.admin_department),
     path('admin_doctor/', views.admin_doctor),
     path('admin_nurse/', views.admin_nurse),

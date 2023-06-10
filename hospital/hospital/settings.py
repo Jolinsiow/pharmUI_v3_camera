@@ -26,25 +26,24 @@ SECRET_KEY = 'django-insecure-d44=xloa_ngo&moz%cujtvuqpr7ub)hfbqss6$xnubj031q3!9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.16.130', '127.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['192.168.97.130', '127.0.0.1', 'localhost', '0.0.0.0']
 
 
 # !!! Added for CSRF protection
 
 CORS_ORIGIN_ALLOW_ALL=True
-#CORS_ALLOW_ALL_ORIGINS=True
 
 CORS_ALLOWED_ORIGINS = [ 
     "http://0.0.0.0:8000",
     "http://localhost:8000",
-    "http://192.168.16.130:8000",
-    "http://127.0.0.1:8000",
+    "http://192.168.97.130:8000",
+    "http://127.0.0.1:8000"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://0.0.0.0:8000",
     "http://localhost:8000",
-    "http://192.168.16.130:8000",
+    "http://192.168.146.130:8000",
     "http://127.0.0.1:8000"
 ]
 
@@ -79,7 +78,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',                      # !!! Added for CSRF 
-    'hospital'
+    'model.apps.ModelConfig',           # To register Django Administration Page
+    'hospital',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +119,7 @@ WSGI_APPLICATION = 'hospital.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -143,7 +143,6 @@ DATABASES = {
     }
 }
 
-'''
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
